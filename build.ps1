@@ -30,6 +30,8 @@ $zip.Dispose()
 $exeBytes = [System.IO.File]::ReadAllBytes($loveExePath)
 $loveBytes = [System.IO.File]::ReadAllBytes($loveFile)
 [System.IO.File]::WriteAllBytes($outputExe, $exeBytes + $loveBytes)
-Write-Host "Game built: $outputExe"
-
+Write-Host "App built: $outputExe"
 Remove-Item $loveFile
+
+Write-Host "Running App $gameName..."
+Invoke-Item $outputExe

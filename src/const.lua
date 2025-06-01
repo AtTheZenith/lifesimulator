@@ -1,30 +1,28 @@
-local CONSTS = {
-	FRAME_RATE = 0,
-	WIDTH = 1920,
-	HEIGHT = 1020,
+local consts = {
+	framerate = 0,
+	width = 1920,
+	height = 1020,
 
-	BOT_IMAGES = {},
-	BOT_SIZE = 20,
-	BOT_SPEED = 120,
-	BOT_RANGE = 90,
-	BOT_MIN_SIZE = 0.5,
-	BOT_MAX_SIZE = 3,
-	BOT_MIN_SPEED = 0.5,
-	BOT_MAX_SPEED = 4,
-	BOT_MIN_RANGE = 0.5,
-	BOT_MAX_RANGE = 5,
+	truebotsize = 20,
+	truebotspeed = 120,
+	truebotrange = 90,
+	minbotsize = 0.5,
+	maxbotsize = 3,
+	minbotspeed = 0.5,
+	maxbotspeed = 4,
+	minbotrange = 0.5,
+	maxbotrange = 5,
 
-	FOOD_IMAGE = nil,
-	FOOD_SIZE = 10,
-	FOOD_START = 200,
-	FOOD_COOLDOWN = 0.03,
+	foodsize = 10,
+	foodstart = 200,
+	foodcooldown = 0.03,
 
-	MAX_ENERGY = 800,
-	FOOD_ENERGY = 200,
-	BOT_ENERGY = 300,
-	REPRODUCTION_COST = 320,
-	REPRODUCTION_MINIMUM = 750,
-	MIN_SIZE_DIFF = 1.07,
+	maxenergy = 800,
+	foodenergy = 200,
+	botenergy = 300,
+	reproductioncost = 320,
+	reproductionmin = 750,
+	minsizegap = 1.07,
 }
 
-return CONSTS
+return consts

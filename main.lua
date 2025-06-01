@@ -1,31 +1,10 @@
--- Debugger configuration
-if arg[2] == "debug" then
-	lldebugger = require("lldebugger").start()
-end
-
-local love_errorhandler = love.errorhandler
-
--- main.lua
-local player = require("src.player")
 local const = require("src.const")
+local helper = require("src.helper")
 
 function love.load()
-	player.load()
+  love.graphics.setBackgroundColor(helper.color3(60, 60, 60))
 end
 
-function love.update(dt)
-	player.update(dt)
-end
+function love.update() end
 
-function love.draw()
-	player.draw()
-end
-
--- End of file
-function love.errorhandler(msg)
-	if lldebugger then
-		error(msg, 2)
-	else
-		return love_errorhandler(msg)
-	end
-end
+function love.draw() end
