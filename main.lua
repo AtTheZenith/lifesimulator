@@ -1,21 +1,36 @@
-local bot = require("src.bot")
-local const = require("src.const")
-local helper = require("src.helper")
+local bot = require 'src.bot'
+local const = require 'src.const'
 
----@type Bot
-local bot1
+local helper = require 'src.helper'
+local color = helper.color
+local magnitude = helper.getmagnitude
+local distance = helper.getdistance
+
+---@type bot[]
+local bots = {}
 function love.load()
-  love.graphics.setBackgroundColor(helper.color3(60, 60, 60))
-  bot1 = bot:new({
+  love.graphics.setBackgroundColor(helper.color(60, 60, 60))
+  local thing = bot:new {
     x = 300,
     y = 300,
-  })
+    team = math.random(2),
+  }
+  for _ = 1, 100000 do
+    thing = thing:reproduce()
+    table.insert(bots, thing)
+  end
 end
 
-function love.update(dt)
-  bot1:move(1 - math.random() * 2, 1 - math.random() * 2)
-  bot1:update(dt)
-  print(bot1.x, bot1.y)
+function love.update(delta)
+  print(1 / delta)
+  for _, v in next, bots do
+    v:move(1 - math.random() * 2, 1 - math.random() * 2)
+    v:update(delta)
+  end
 end
 
-function love.draw() end
+function love.draw()
+  for _, v in next, bots do
+    v:draw()
+  end
+end

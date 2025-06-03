@@ -1,6 +1,6 @@
 local functions = {}
 
-functions.colliding = function(entity_1, entity_2)
+function functions.colliding(entity_1, entity_2)
   local dx = entity_2.x - entity_1.x
   local dy = entity_2.y - entity_1.y
 
@@ -10,7 +10,7 @@ functions.colliding = function(entity_1, entity_2)
   return overlap_x > 0 and overlap_y > 0
 end
 
-functions.handle = function(entity_1, entity_2)
+function functions.handle(entity_1, entity_2)
   local dx = entity_2.x - entity_1.x
   local dy = entity_2.y - entity_1.y
 
