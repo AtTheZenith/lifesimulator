@@ -1,10 +1,10 @@
 local const = require 'src.const'
 local helper = require 'src.helper'
+local clamp = helper.clamp
 local color = helper.color
 local magnitude = helper.getmagnitude
-local distance = helper.getdistance
 
----@class bot
+---@class bot: entity
 ---@field x number
 ---@field y number
 ---@field movedirection {x: number, y: number}
@@ -36,23 +36,13 @@ function bot:new(args)
 
   new.x = args.x
   new.y = args.y
-  new.movedirection = {
-    x = 0,
-    y = 0,
-    __index = function(t, k)
-      if k == 1 then
-        return t.x
-      elseif k == 2 then
-        return t.y
-      end
-    end,
-  }
-  new.size = args.size
-  new.truesize = args.size * const.truebotsize
-  new.speed = args.speed
-  new.truespeed = args.speed * const.truebotspeed
-  new.range = args.range
-  new.truerange = args.range * const.truebotrange
+  new.movedirection = helper.point.new(0, 0)
+  new.size = clamp(args.size, const.minbotsize, const.maxbotsize)
+  new.truesize = new.size * const.truebotsize
+  new.speed = clamp(args.speed, const.minbotspeed, const.maxbotspeed)
+  new.truespeed = new.speed * const.truebotspeed
+  new.range = clamp(args.range, const.minbotrange, const.maxbotsize)
+  new.truerange = new.range * const.truebotrange
   new.energy = args.energy * const.maxenergy
   new.team = args.team
 
@@ -119,7 +109,7 @@ function bot:draw()
     r, g, b = 255, 255, 255
   end
   love.graphics.setColor(color(r, g, b, 255))
-  love.graphics.rectangle('fill', self.x, self.y, self.truesize, self.truesize)
+  love.graphics.rectangle('fill', self.x - self.truesize / 2, self.y - self.truesize / 2, self.truesize, self.truesize)
 end
 
 ---Creates a new bot with mutated attributes.
