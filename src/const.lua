@@ -1,10 +1,11 @@
+---@enum consts
 local consts = {
+  windowtitle = 'Life Simulator v0.5.0',
   framerate = 0,
-  width = 1920,
-  height = 1020,
+  dimensions = { love.window.getDesktopDimensions(0) },
 
-  truebotsize = 20,
-  truebotspeed = 120,
+  trueobjectsize = 20,
+  trueentityspeed = 120,
   truebotrange = 90,
   minbotsize = 0.5,
   maxbotsize = 3,
@@ -23,6 +24,13 @@ local consts = {
   reproductioncost = 320,
   reproductionmin = 750,
   minsizegap = 1.07,
+
+  images = {
+    object = love.graphics.newImage 'assets/object.png',
+    bluebot = love.graphics.newImage 'assets/bot_1.png',
+    orangebot = love.graphics.newImage 'assets/bot_2.png',
+    food = love.graphics.newImage 'assets/food.png',
+  },
 }
 
 return consts

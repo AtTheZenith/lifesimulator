@@ -1,63 +1,38 @@
 local const = require 'src.const'
+local entity = require 'src.entity'
 local helper = require 'src.helper'
+local point = helper.point
 local clamp = helper.clamp
 local color = helper.color
 local magnitude = helper.getmagnitude
 
 ---@class bot: entity
----@field x number
----@field y number
----@field movedirection {x: number, y: number}
----@field size number
----@field speed number
 ---@field range number
 ---@field energy number
 ---@field team number
----@field truesize number
----@field truespeed number
 ---@field truerange number
-local bot = {}
+local bot = setmetatable({}, entity)
 bot.__index = bot
 
 ---Creates a new Bot instance.
 ---All the following arguments are *optional*.
----@param args table **table**  containing the following arguments:
+---@param args {x: number?, y: number?, size: number?, speed: number?, range: number?, energy: number?, team: number?, image: love.Image?}? **table**  containing the following arguments:
 --- `x` & `y`: **number**                 The 2D position.
 --- `size` & `speed` & `range`: **number**  The bot's size, speed, range.
 --- `energy`: **number**                The starting energy.
 --- `team`: **number**                  The bot's team.
+---@return bot
 function bot:new(args)
-  local new = setmetatable({}, bot)
-  args = setmetatable(args or {}, {
-    __index = function()
-      return 1
-    end,
-  })
+  args = args or {}
+  local new = entity.new(self, args)
+  ---@cast new bot
 
-  new.x = args.x
-  new.y = args.y
-  new.movedirection = helper.point.new(0, 0)
-  new.size = clamp(args.size, const.minbotsize, const.maxbotsize)
-  new.truesize = new.size * const.truebotsize
-  new.speed = clamp(args.speed, const.minbotspeed, const.maxbotspeed)
-  new.truespeed = new.speed * const.truebotspeed
-  new.range = clamp(args.range, const.minbotrange, const.maxbotsize)
+  new.range = clamp(args.range or 1, const.minbotrange, const.maxbotrange)
   new.truerange = new.range * const.truebotrange
-  new.energy = args.energy * const.maxenergy
-  new.team = args.team
+  new.energy = (args.energy or 1) * const.maxenergy
+  new.team = args.team or 0
 
   return new
-end
-
----Positions the bot at the given *x* & *y* vectors.
----@param x number The *x* vector.
----@param y number The *y* vector.
----@overload fun(x: point)
-function bot:position(x, y)
-  if type(x) == 'table' then
-    x, y = x.x or x[1], x.y or x[2]
-  end
-  self.x, self.y = x, y
 end
 
 ---Adds energy to the current energy level.
@@ -97,34 +72,21 @@ function bot:update(delta)
   )
 end
 
----Draws the bot on the screen.
-function bot:draw()
-  ---@type number, number, number
-  local r, g, b
-  if self.team == 1 then
-    r, g, b = 35, 35, 255
-  elseif self.team == 2 then
-    r, g, b = 255, 35, 35
-  else
-    r, g, b = 255, 255, 255
-  end
-  love.graphics.setColor(color(r, g, b, 255))
-  love.graphics.rectangle('fill', self.x - self.truesize / 2, self.y - self.truesize / 2, self.truesize, self.truesize)
-end
-
 ---Creates a new bot with mutated attributes.
----@return bot
+---@return bot?
 function bot:reproduce()
-  self:consume(-const.reproductioncost)
-  return bot:new {
-    x = self.x,
-    y = self.y,
-    size = self.size + (math.random() / 5 - 0.1),
-    speed = self.speed + (math.random() / 2.5 - 0.2),
-    range = self.range + (math.random() / 5 - 0.1),
-    energy = self.energy / 2 / const.maxenergy,
-    team = math.random(3),
-  }
+  if self.energy > const.reproductionmin then
+    self:consume(-const.reproductioncost)
+    return bot:new {
+      x = self.x,
+      y = self.y,
+      size = self.size + (math.random() / 5 - 0.1),
+      speed = self.speed + (math.random() / 2.5 - 0.2),
+      range = self.range + (math.random() / 5 - 0.1),
+      energy = self.energy / 2 / const.maxenergy,
+      team = math.random(3),
+    }
+  end
 end
 
 return bot

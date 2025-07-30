@@ -4,10 +4,16 @@ $outputExe = "./build/$gameName.exe"
 $loveFile = "./build/$gameName.love"
 $includeFiles = @(
   "./main.lua",
-  "./src/player.lua",
-  "./src/input.lua",
+  "./src/object.lua",
+  "./src/entity.lua",
+  "./src/bot.lua",
+  "./src/tracker.lua",
+  "./src/helper.lua",
   "./src/const.lua",
-  "./assets/bot.png"
+  "./assets/object.png",
+  "./assets/bot_1.png",
+  "./assets/bot_2.png",
+  "./assets/food.png"
 )
 
 Add-Type -AssemblyName "System.IO.Compression.FileSystem"
@@ -17,11 +23,14 @@ foreach ($file in $includeFiles)
 {
   if (Test-Path $file)
   {
-    $zipEntryName = $file -replace '\\', '/'
-    if ($file -eq "./main.lua")
-    {
-      $zipEntryName = "main.lua"
-    }
+    # Forward slashes for consistency
+    #
+    # Remove ./ prefix when adding it to the
+    # archive because LOVE2D will search in
+    # working directory if string in code has
+    # ./ prefix e.g ./src/bot.lua
+    $zipEntryName = ($file -replace '\\', '/') -replace '^\./', ''
+
     [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $file, $zipEntryName) | Out-Null
   }
 }
