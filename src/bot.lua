@@ -1,9 +1,9 @@
 local const = require 'src.const'
 local entity = require 'src.entity'
 local helper = require 'src.helper'
-local point = helper.point
+-- local point = helper.point
 local clamp = helper.clamp
-local color = helper.color
+-- local color = helper.color
 local magnitude = helper.getmagnitude
 
 ---@class bot: entity
@@ -14,13 +14,14 @@ local magnitude = helper.getmagnitude
 local bot = setmetatable({}, entity)
 bot.__index = bot
 
----Creates a new Bot instance.
+---Creates a new bot instance.
 ---All the following arguments are *optional*.
 ---@param args {x: number?, y: number?, size: number?, speed: number?, range: number?, energy: number?, team: number?, image: love.Image?}? **table**  containing the following arguments:
 --- `x` & `y`: **number**                 The 2D position.
 --- `size` & `speed` & `range`: **number**  The bot's size, speed, range.
 --- `energy`: **number**                The starting energy.
 --- `team`: **number**                  The bot's team.
+--- `image`: **love.image**             The bot sprite.
 ---@return bot
 function bot:new(args)
   args = args or {}

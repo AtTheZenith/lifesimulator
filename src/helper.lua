@@ -34,19 +34,19 @@ function helper.clamp(value, min, max)
   return math.min(max, math.max(min, value))
 end
 
----Convert 24-bit colors to float based colors easily.
----@param r number Red
----@param g number Green
----@param b number Blue
----@param a? number *[optional]* Alpha
----@return number, number, number, number?
-function helper.color(r, g, b, a)
-  if a then
-    return r / 255, g / 255, b / 255, a / 255
-  else
-    return r / 255, g / 255, b / 255
-  end
-end
+-----Convert 24-bit colors to float based colors easily.
+-----@param r number Red
+-----@param g number Green
+-----@param b number Blue
+-----@param a? number *[optional]* Alpha
+-----@return number, number, number, number?
+-- function helper.color(r, g, b, a)
+--   if a then
+--     return r / 255, g / 255, b / 255, a / 255
+--   else
+--     return r / 255, g / 255, b / 255
+--   end
+-- end
 
 ---Calculates the magnitude of an *xy* point, i.e. the distance from (0, 0).
 ---@param x number @ The *x* vector.
