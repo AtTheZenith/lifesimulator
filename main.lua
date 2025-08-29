@@ -19,7 +19,7 @@ local ft
 function love.load()
   ---Window Setup
   love.window.setTitle(const.windowtitle)
-  love.window.setMode(800, 500, { borderless = false, resizable = true })
+  love.window.setMode(const.windowsize[1], const.windowsize[2], { borderless = false, resizable = true })
   love.graphics.setBackgroundColor(color(60, 60, 60, 60))
 
   ---Tracker Setup
@@ -28,13 +28,17 @@ function love.load()
 end
 
 function love.update(delta)
+  ---Update dimensions
+  local w, h = love.window.getMode()
+  const.windowsize[1], const.windowsize[2] = w, h
+
   ---Spawn food and make the bot
   ---chase it, spawn another one
   ---if bot consumes it.
   if #bt.objects == 0 then
     bt:add(bot:new {
-      x = math.random(800),
-      y = math.random(500),
+      x = math.random(const.windowsize[1]),
+      y = math.random(const.windowsize[2]),
       team = math.random(2),
       energy = 1,
       image = (math.random(2) == 1 and botimage1 or botimage2),
@@ -43,8 +47,8 @@ function love.update(delta)
 
   if #ft.objects == 0 then
     ft:add(food:new {
-      x = math.random(800),
-      y = math.random(500),
+      x = math.random(const.windowsize[1]),
+      y = math.random(const.windowsize[2]),
       size = math.random(),
       energy = 1,
       image = foodimage,

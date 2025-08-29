@@ -1,8 +1,11 @@
+local point = require 'src.helper'.point
+
 ---@enum consts
 local consts = {
   windowtitle = 'Life Simulator v0.6.0',
   framerate = 0,
-  dimensions = { love.window.getDesktopDimensions(0) },
+  dimensions = point:new(love.window.getDesktopDimensions(0)),
+  windowsize = point:new(800, 500),
 
   trueobjectsize = 40,
   trueentityspeed = 120,
