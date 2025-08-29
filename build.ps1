@@ -7,6 +7,7 @@ $includeFiles = @(
   "./src/object.lua",
   "./src/entity.lua",
   "./src/bot.lua",
+  "./src/food.lua",
   "./src/tracker.lua",
   "./src/helper.lua",
   "./src/const.lua",

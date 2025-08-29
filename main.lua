@@ -1,5 +1,6 @@
 local bot = require 'src.bot'
 local const = require 'src.const'
+local food = require 'src.food'
 local helper = require 'src.helper'
 local tracker = require 'src.tracker'
 local color = helper.color
@@ -7,48 +8,76 @@ local bottracker = tracker.bottracker
 local foodtracker = tracker.foodtracker
 
 local image = const.images.object
+local botimage1 = const.images.bluebot
+local botimage2 = const.images.orangebot
+local foodimage = const.images.food
 
----@type bottracker
-local tracker1 = bottracker:new()
+---Trackers
+local bt
+local ft
+
 function love.load()
-  --- Window Setup
+  ---Window Setup
   love.window.setTitle(const.windowtitle)
-  love.window.setMode(const.dimensions[1], const.dimensions[2], { borderless = true, resizable = false })
+  love.window.setMode(800, 500, { borderless = false, resizable = true })
   love.graphics.setBackgroundColor(color(60, 60, 60, 60))
 
-  --- Bot Setup
-  ---@type tracker
-  tracker1:add(bot:new {
-    x = 400,
-    y = 300,
-    team = math.random(2),
-  })
-  for _ = 1, 10 do
-    tracker1:iterate(function(v)
-      v:move(math.random() * 2 - 1, math.random() * 2 - 1)
-    end)
-    tracker1:update(0.001)
-    tracker1:iterate(function(v)
-      v:consume(9000, true)
-    end)
-    tracker1:reproducecycle()
-  end
+  ---Tracker Setup
+  bt = bottracker:new()
+  ft = foodtracker:new()
 end
 
-local time = love.timer.getTime()
-local x = 200
 function love.update(delta)
-  if love.timer.getTime() > time + 2 then
-    time = love.timer.getTime()
-    x = x == 200 and 600 or 200
+  ---Spawn food and make the bot
+  ---chase it, spawn another one
+  ---if bot consumes it.
+  if #bt.objects == 0 then
+    bt:add(bot:new {
+      x = math.random(800),
+      y = math.random(500),
+      team = math.random(2),
+      energy = 1,
+      image = (math.random(2) == 1 and botimage1 or botimage2),
+    })
   end
-  tracker1:iterate(function(v)
-    v:move(x - v.x, 300 - v.y)
-    v:update(delta)
+
+  if #ft.objects == 0 then
+    ft:add(food:new {
+      x = math.random(800),
+      y = math.random(500),
+      size = math.random(),
+      energy = 1,
+      image = foodimage,
+    })
+  end
+
+  ---Chase food.
+  bt:iterate(function(b)  
+    local closestfood = nil
+    local closestdist = math.huge
+    for _, f in next, ft.objects do
+      local dist = helper.getmagnitude(f.x - b.x, f.y - b.y)
+      if dist < closestdist then
+        closestdist = dist
+        closestfood = f
+      end
+    end
+    if closestfood then
+      b:move(closestfood.x - b.x, closestfood.y - b.y)
+    else
+      b:move(0, 0)
+    end
   end)
-  tracker1:pairwise(helper.handlecollision)
+
+  ---Chores
+  bt:update(delta)
+  ft:consumecycle(bt)
+
+  bt:clean()
+  ft:clean()
 end
 
 function love.draw()
-  tracker1:draw(image)
+  bt:draw()
+  ft:draw()
 end

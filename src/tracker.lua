@@ -1,52 +1,55 @@
 local const = require 'src.const'
+local food = require 'src.food'
 local helper = require 'src.helper'
+
+local colliding = helper.colliding
+local handlecollision = helper.handlecollision
 
 ---@class tracker
 ---@field type string
 ---@field objects any[]
----@field private customfunctions any
 local tracker = {}
 tracker.__index = tracker
 
 ---Creates a new tracker instance.
----@param args? {type: string?} **table**  containing the following arguments:
---- `type`: [optional] The type of tracker, purely for decoration.
 ---@return tracker
-function tracker:new(args)
+function tracker:new()
   local new = setmetatable({}, self)
-  args = setmetatable(args or {}, {
-    __index = function()
-      return false
-    end,
-  })
 
   ---@type string
-  new.type = args.type and args.type:lower() or ''
+  new.type = 'normal'
   new.objects = {}
 
   return new
 end
 
+---Adds an object to the objects list.
 ---@param object any
 function tracker:add(object)
   table.insert(self.objects, object)
 end
 
+---Removes an object from the objects list.
 ---@param object any
 function tracker:remove(object)
-  for i, v in next, self.objects do
-    if v == object then
-      table.remove(self.objects, i)
-      break
+  local objects = self.objects
+  for i = 1, #objects do
+    if objects[i] == object then
+      objects[i] = objects[#objects]
+      objects[#objects] = nil
+      return
     end
   end
 end
+
+---Gets an object at the specific index.
 ---@param index number
 ---@return any
 function tracker:get(index)
   return self.objects[index]
 end
 
+---Wrapper for iterating over the object list.
 ---@param func fun(v: any)
 function tracker:iterate(func)
   for _, v in next, self.objects do
@@ -65,13 +68,33 @@ function tracker:pairwise(func)
   end
 end
 
+---Clears all destroyed objects from the objects list.
+function tracker:clean()
+  local objects = self.objects
+  for i = #objects, 1, -1 do
+    if objects[i].destroyed then
+      objects[i] = objects[#objects]
+      objects[#objects] = nil
+    end
+  end
+end
+
+---Draws all objects on screen.
+function tracker:draw()
+  for _, v in next, self.objects do
+    v:draw()
+  end
+end
+
 ---@class bottracker: tracker
 local bottracker = setmetatable({}, { __index = tracker })
 bottracker.__index = bottracker
 
+---Creates a new tracker for the `bot` type.
 ---@return bottracker
 function bottracker:new()
-  local new = tracker.new(self, { type = 'food' })
+  local new = tracker.new(self)
+  new.type = 'bot'
   ---@cast new bottracker
   return new
 end
@@ -81,17 +104,14 @@ end
 function bottracker:update(delta)
   for _, v in next, self.objects do
     v:update(delta)
+    if v.energy <= 0 then
+      v:destroy()
+      self:remove(v)
+    end
   end
 end
 
---- Draws all bots on screen.
-function bottracker:draw(...)
-  for _, v in next, self.objects do
-    v:draw(...)
-  end
-end
-
---- Reproduce tick for every bot in the tracker.
+---Reproduce tick for every bot in the tracker.
 function bottracker:reproducecycle()
   local offspring = {}
   for _, v in next, self.objects do
@@ -111,18 +131,32 @@ foodtracker.__index = foodtracker
 
 ---@return foodtracker
 function foodtracker:new()
-  local new = tracker.new(self, { type = 'food' })
+  local new = tracker.new(self)
+  new.type = 'food'
   ---@cast new foodtracker
   return new
 end
 
-function foodtracker:generate(x, y, size, energy) end
+---Creates a food object and tracks it.
+---@param x number
+---@param y number
+---@param size number
+---@param energy number
+function foodtracker:generate(x, y, size, energy)
+  self:add(food:new { x = x, y = y, size = size, energy = energy, image = const.images.food })
+end
 
-function foodtracker:consumecycle(entities) end
-
-function foodtracker:draw()
-  for _, v in next, self.objects do
-    v:draw()
+---Handles the consumption of food by bots.
+---@param entities bottracker
+function foodtracker:consumecycle(entities)
+  for _, bot in next, entities.objects do
+    for _, food in next, self.objects do
+      if colliding(bot, food) then
+        handlecollision(bot, food)
+        food:feed(bot)
+        self:remove(food)
+      end
+    end
   end
 end
 

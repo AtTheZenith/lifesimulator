@@ -1,14 +1,9 @@
+local bot = require 'src.bot'
 local const = require 'src.const'
 local object = require 'src.object'
-local helper = require 'src.helper'
--- local point = helper.point
-local clamp = helper.clamp
--- local color = helper.color
-local magnitude = helper.getmagnitude
 
 ---@class food: object
 ---@field energy number
-
 local food = setmetatable({}, object)
 food.__index = food
 
@@ -20,13 +15,24 @@ food.__index = food
 --- `energy`: **number**                The starting energy.
 --- `team`: **number**                  The bot's team.
 --- `image`: **love.image**             The food sprite.
----@return bot
+---@return food
 function food:new(args)
   args = args or {}
   local new = object.new(self, args)
-  ---@cast new bot
+  ---@cast new food
 
-  new.energy = (args.energy or 1) * const.maxenergy
+  new.size = args.size or 1
+  new.truesize = new.size * const.trueobjectsize
+  new.energy = (args.energy or 1) * const.foodenergy
 
   return new
 end
+
+---@param bot bot
+function food:feed(bot)
+  bot:consume(self.energy)
+  self.energy = 0
+  self:destroy()
+end
+
+return food

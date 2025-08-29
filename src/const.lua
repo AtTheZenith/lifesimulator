@@ -1,10 +1,10 @@
 ---@enum consts
 local consts = {
-  windowtitle = 'Life Simulator v0.5.0',
+  windowtitle = 'Life Simulator v0.6.0',
   framerate = 0,
   dimensions = { love.window.getDesktopDimensions(0) },
 
-  trueobjectsize = 20,
+  trueobjectsize = 40,
   trueentityspeed = 120,
   truebotrange = 90,
   minbotsize = 0.5,

@@ -1,9 +1,7 @@
 local const = require 'src.const'
 local entity = require 'src.entity'
 local helper = require 'src.helper'
--- local point = helper.point
 local clamp = helper.clamp
--- local color = helper.color
 local magnitude = helper.getmagnitude
 
 ---@class bot: entity
@@ -28,6 +26,8 @@ function bot:new(args)
   local new = entity.new(self, args)
   ---@cast new bot
 
+  new.size = clamp(args.size or 1, const.minbotsize, const.maxbotsize)
+  new.truesize = new.size * const.trueobjectsize
   new.range = clamp(args.range or 1, const.minbotrange, const.maxbotrange)
   new.truerange = new.range * const.truebotrange
   new.energy = (args.energy or 1) * const.maxenergy
@@ -45,16 +45,6 @@ function bot:consume(energy, reset)
   else
     self.energy = energy
   end
-end
-
----Changes the bot's direction of movement.
----@param x number The *x* vector.
----@param y number The *y* vector.
-function bot:move(x, y)
-  local mag = magnitude(x, y)
-  mag = mag == 0 and 1 or mag
-  self.movedirection.x = x / mag
-  self.movedirection.y = y / mag
 end
 
 ---Updates the bot after an elapsed amount of time.

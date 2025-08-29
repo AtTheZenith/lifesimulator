@@ -34,19 +34,19 @@ function helper.clamp(value, min, max)
   return math.min(max, math.max(min, value))
 end
 
------Convert 24-bit colors to float based colors easily.
------@param r number Red
------@param g number Green
------@param b number Blue
------@param a? number *[optional]* Alpha
------@return number, number, number, number?
--- function helper.color(r, g, b, a)
---   if a then
---     return r / 255, g / 255, b / 255, a / 255
---   else
---     return r / 255, g / 255, b / 255
---   end
--- end
+---Convert 24-bit colors to float based colors easily.
+---@param r number Red
+---@param g number Green
+---@param b number Blue
+---@param a? number *[optional]* Alpha
+---@return number, number, number, number?
+function helper.color(r, g, b, a)
+  if a then
+    return r / 255, g / 255, b / 255, a / 255
+  else
+    return r / 255, g / 255, b / 255
+  end
+end
 
 ---Calculates the magnitude of an *xy* point, i.e. the distance from (0, 0).
 ---@param x number @ The *x* vector.
@@ -73,9 +73,11 @@ function helper.getdistance(x1, y1, x2, y2)
   return helper.getmagnitude(x2 - x1, y2 - y1)
 end
 
+-- #TODO: Fix delayed collision handling.
+
 ---Determines if 2 entities are colliding.
----@param entity1 entity
----@param entity2 entity
+---@param entity1 object
+---@param entity2 object
 ---@return boolean
 function helper.colliding(entity1, entity2)
   local overlap_x = (entity1.truesize + entity2.truesize) / 2 - math.abs(entity2.x - entity1.x)
@@ -85,25 +87,25 @@ function helper.colliding(entity1, entity2)
 end
 
 ---Handles collision between 2 entities.
----@param entity1 entity
----@param entity2 entity
-function helper.handlecollision(entity1, entity2)
-  local dx = entity2.x - entity1.x
-  local dy = entity2.y - entity1.y
-  local xoverlap = (entity1.truesize + entity2.truesize) / 2 - math.abs(dx)
-  local yoverlap = (entity1.truesize + entity2.truesize) / 2 - math.abs(dy)
+---@param object1 object
+---@param object2 object
+function helper.handlecollision(object1, object2)
+  local dx = object2.x - object1.x
+  local dy = object2.y - object1.y
+  local xoverlap = (object1.truesize + object2.truesize) / 2 - math.abs(dx)
+  local yoverlap = (object1.truesize + object2.truesize) / 2 - math.abs(dy)
 
   if xoverlap > 0 and yoverlap > 0 then
-    local mass1 = entity1.truesize
-    local mass2 = entity2.truesize
+    local mass1 = object1.truesize
+    local mass2 = object2.truesize
     local total_mass = mass1 + mass2
 
     if xoverlap < yoverlap then
-      entity1:position(entity1.x - ((dx > 0) and 1 or -1) * (mass2 / total_mass) * xoverlap, entity1.y)
-      entity2:position(entity2.x + ((dx > 0) and 1 or -1) * (mass1 / total_mass) * xoverlap, entity2.y)
+      object1:position(object1.x - ((dx > 0) and 1 or -1) * (mass2 / total_mass) * xoverlap, object1.y)
+      object2:position(object2.x + ((dx > 0) and 1 or -1) * (mass1 / total_mass) * xoverlap, object2.y)
     else
-      entity1:position(entity1.x, entity1.y - ((dy > 0) and 1 or -1) * (mass2 / total_mass) * yoverlap)
-      entity2:position(entity2.x, entity2.y + ((dy > 0) and 1 or -1) * (mass1 / total_mass) * yoverlap)
+      object1:position(object1.x, object1.y - ((dy > 0) and 1 or -1) * (mass2 / total_mass) * yoverlap)
+      object2:position(object2.x, object2.y + ((dy > 0) and 1 or -1) * (mass1 / total_mass) * yoverlap)
     end
   end
 end

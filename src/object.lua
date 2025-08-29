@@ -1,13 +1,12 @@
 local const = require 'src.const'
-local helper = require 'src.helper'
 
 ---@class object
+---@field destroyed boolean
 ---@field x number
 ---@field y number
 ---@field size number
 ---@field truesize number
 ---@field image love.Image
----@field position fun(self: object, x: number, y: number)
 local object = {}
 object.__index = object
 
@@ -27,6 +26,7 @@ function object:new(args)
   new.size = args.size or 1
   new.truesize = new.size * const.trueobjectsize
   new.image = const.images.object
+  new.destroyed = false
   if args.image then
     new.image = args.image
   end
@@ -47,7 +47,13 @@ end
 
 ---Draws the object on the screen.
 function object:draw()
-  love.graphics.draw(self.image, self.x, self.y, 0, self.size, self.size)
+  love.graphics.draw(self.image, self.x, self.y, 0)
+end
+
+---Disables draw function and flags the object as destroyed.
+function object:destroy()
+  self.destroyed = true
+  self.draw = function() end
 end
 
 return object
