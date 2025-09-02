@@ -1,8 +1,8 @@
 local const = require 'src.const'
-local helper = require 'src.helper'
+local utils = require 'src.utils'
 local object = require 'src.object'
-local magnitude = helper.getmagnitude
-local point = helper.point
+local magnitude = utils.getmagnitude
+local point = utils.point
 
 ---@class entity: object
 ---@field speed number

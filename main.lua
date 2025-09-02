@@ -1,9 +1,9 @@
 local bot = require 'src.bot'
 local const = require 'src.const'
 local food = require 'src.food'
-local helper = require 'src.helper'
+local utils = require 'src.utils'
 local tracker = require 'src.tracker'
-local color = helper.color
+local color = utils.color
 local bottracker = tracker.bottracker
 local foodtracker = tracker.foodtracker
 
@@ -56,11 +56,11 @@ function love.update(delta)
   end
 
   ---Chase food.
-  bt:iterate(function(b)  
+  bt:iterate(function(b)
     local closestfood = nil
     local closestdist = math.huge
     for _, f in next, ft.objects do
-      local dist = helper.getmagnitude(f.x - b.x, f.y - b.y)
+      local dist = utils.getmagnitude(f.x - b.x, f.y - b.y)
       if dist < closestdist then
         closestdist = dist
         closestfood = f

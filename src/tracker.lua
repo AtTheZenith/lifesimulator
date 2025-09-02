@@ -1,9 +1,9 @@
 local const = require 'src.const'
 local food = require 'src.food'
-local helper = require 'src.helper'
+local utils = require 'src.utils'
 
-local colliding = helper.colliding
-local handlecollision = helper.handlecollision
+local colliding = utils.colliding
+local handlecollision = utils.handlecollision
 
 ---@class tracker
 ---@field type string

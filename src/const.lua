@@ -1,4 +1,5 @@
-local point = require 'src.helper'.point
+local utils = require 'src.utils'
+local point = utils.point
 
 ---@enum consts
 local consts = {

@@ -1,8 +1,8 @@
 local const = require 'src.const'
 local entity = require 'src.entity'
-local helper = require 'src.helper'
-local clamp = helper.clamp
-local magnitude = helper.getmagnitude
+local utils = require 'src.utils'
+local clamp = utils.clamp
+local magnitude = utils.getmagnitude
 
 ---@class bot: entity
 ---@field range number
