@@ -18,6 +18,10 @@ $includeFiles = @(
   "./assets/food.png"
 )
 
+if (Test-Path $loveFile) {
+  Remove-Item $loveFile
+}
+
 Add-Type -AssemblyName "System.IO.Compression.FileSystem"
 $zip = [System.IO.Compression.ZipFile]::Open($loveFile, 'Create')
 
@@ -36,13 +40,13 @@ foreach ($file in $includeFiles)
     [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $file, $zipEntryName) | Out-Null
   }
 }
-$zip.Close()
+$zip.Dispose()
 
 $exeBytes = [System.IO.File]::ReadAllBytes($loveExePath)
 $loveBytes = [System.IO.File]::ReadAllBytes($loveFile)
 [System.IO.File]::WriteAllBytes($outputExe, $exeBytes + $loveBytes)
 Write-Host "App built: $outputExe"
-Remove-Item $loveFile
+# Remove-Item $loveFile
 
 Write-Host "Running App $gameName..."
 Invoke-Item $outputExe
