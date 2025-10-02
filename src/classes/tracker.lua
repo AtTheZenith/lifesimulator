@@ -1,5 +1,5 @@
 local const = require 'src.const'
-local food = require 'src.food'
+local food = require 'src.classes.food'
 local utils = require 'src.utils'
 
 local colliding = utils.colliding

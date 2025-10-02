@@ -1,6 +1,6 @@
 local const = require 'src.const'
 local utils = require 'src.utils'
-local object = require 'src.object'
+local object = require 'src.classes.object'
 local magnitude = utils.getmagnitude
 local point = utils.point
 

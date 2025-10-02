@@ -1,15 +1,16 @@
-$gameName = "Main"
+$gameName = "lifesimulator"
 $loveExePath = "C:/Program Files/LOVE/love.exe"
-$outputExe = "./build/$gameName.exe"
+$outputExe = "./build/$gameName-windows-x86-64.exe"
 $loveFile = "./build/$gameName.love"
 $includeFiles = @(
   "./main.lua",
-  "./src/object.lua",
-  "./src/entity.lua",
-  "./src/bot.lua",
-  "./src/food.lua",
-  "./src/tracker.lua",
-  "./src/helper.lua",
+  "./src/classes/object.lua",
+  "./src/classes/entity.lua",
+  "./src/classes/bot.lua",
+  "./src/classes/food.lua",
+  "./src/classes/tracker.lua",
+  "./src/modes/foodchaser.lua",
+  "./src/utils.lua",
   "./src/const.lua",
   "./assets/object.png",
   "./assets/bot_1.png",
@@ -35,7 +36,7 @@ foreach ($file in $includeFiles)
     [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $file, $zipEntryName) | Out-Null
   }
 }
-$zip.Dispose()
+$zip.Close()
 
 $exeBytes = [System.IO.File]::ReadAllBytes($loveExePath)
 $loveBytes = [System.IO.File]::ReadAllBytes($loveFile)

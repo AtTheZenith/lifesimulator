@@ -1,6 +1,6 @@
-local bot = require 'src.bot'
+local bot = require 'src.classes.bot'
 local const = require 'src.const'
-local object = require 'src.object'
+local object = require 'src.classes.object'
 
 ---@class food: object
 ---@field energy number

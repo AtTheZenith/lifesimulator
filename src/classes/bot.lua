@@ -1,5 +1,5 @@
 local const = require 'src.const'
-local entity = require 'src.entity'
+local entity = require 'src.classes.entity'
 local utils = require 'src.utils'
 local clamp = utils.clamp
 local magnitude = utils.getmagnitude

@@ -1,4 +1,4 @@
-local helper = {}
+local utils = {}
 
 -- POINT:
 ---@class point
@@ -22,7 +22,7 @@ function point:new(x, y)
   local new = setmetatable({ x = x, y = y }, self)
   return new
 end
-helper.point = point
+utils.point = point
 
 --FUNCTIONS:
 ---Clamps a number between any two numbers.
@@ -30,7 +30,7 @@ helper.point = point
 ---@param min number
 ---@param max number
 ---@return number
-function helper.clamp(value, min, max)
+function utils.clamp(value, min, max)
   return math.min(max, math.max(min, value))
 end
 
@@ -40,7 +40,7 @@ end
 ---@param b number Blue
 ---@param a? number *[optional]* Alpha
 ---@return number, number, number, number?
-function helper.color(r, g, b, a)
+function utils.color(r, g, b, a)
   if a then
     return r / 255, g / 255, b / 255, a / 255
   else
@@ -53,7 +53,7 @@ end
 ---@param y number @ The *y* vector.
 ---@return number
 ---@overload fun(point): number
-function helper.getmagnitude(x, y)
+function utils.getmagnitude(x, y)
   if type(x) == 'table' then
     x, y = x.x or x[1], x.y or x[2]
   end
@@ -64,13 +64,13 @@ end
 ---@overload fun(x1: number, y1: number, x2: number, y2: number): number Pass in *x* & *y* positions individually.
 ---@overload fun(p1: point, p2: point): number Pass in *xy* positions as tables.
 ---@return number
-function helper.getdistance(x1, y1, x2, y2)
+function utils.getdistance(x1, y1, x2, y2)
   local ist2 = type(y1) == 'table'
   x2, y2 = ist2 and (y1.x or y1[1]) or x2, ist2 and (y1.y or y1[2]) or y2
   local ist1 = type(x1) == 'table'
   x1, y1 = ist1 and (x1.x or x1[1]) or x1, ist1 and (x1.y or x1[2]) or y1
 
-  return helper.getmagnitude(x2 - x1, y2 - y1)
+  return utils.getmagnitude(x2 - x1, y2 - y1)
 end
 
 -- #TODO: Fix delayed collision handling.
@@ -79,7 +79,7 @@ end
 ---@param entity1 object
 ---@param entity2 object
 ---@return boolean
-function helper.colliding(entity1, entity2)
+function utils.colliding(entity1, entity2)
   local overlap_x = (entity1.truesize + entity2.truesize) / 2 - math.abs(entity2.x - entity1.x)
   local overlap_y = (entity1.truesize + entity2.truesize) / 2 - math.abs(entity2.y - entity1.y)
 
@@ -89,7 +89,7 @@ end
 ---Handles collision between 2 entities.
 ---@param object1 object
 ---@param object2 object
-function helper.handlecollision(object1, object2)
+function utils.handlecollision(object1, object2)
   local dx = object2.x - object1.x
   local dy = object2.y - object1.y
   local xoverlap = (object1.truesize + object2.truesize) / 2 - math.abs(dx)
@@ -110,4 +110,4 @@ function helper.handlecollision(object1, object2)
   end
 end
 
-return helper
+return utils
