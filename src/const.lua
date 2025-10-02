@@ -3,7 +3,7 @@ local point = utils.point
 
 ---@enum consts
 local consts = {
-  windowtitle = 'Life Simulator v0.6.0',
+  windowtitle = 'Life Simulator v0.7.0',
   framerate = 0,
   dimensions = point:new(love.window.getDesktopDimensions(0)),
   windowsize = point:new(800, 500),
