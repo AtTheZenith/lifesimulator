@@ -18,7 +18,7 @@ entity.__index = entity
 --- `size`: **number**      The entity's size.
 --- `speed`: **number**     The entity's speed
 --- `image`: **love.image** The entity's sprite.
----@return object
+---@return entity
 function entity:new(args)
   args = args or {}
   local new = object.new(self, args)
