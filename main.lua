@@ -1,5 +1,5 @@
-local const = require 'src.const'
-local utils = require 'src.utils'
+local const = require 'src.constants'
+local utils = require 'src.utilitiess'
 local color = utils.color
 
 local modes = {
@@ -10,7 +10,7 @@ local modes = {
 local currentmode = modes.collisiontester
 
 function love.load()
-  ---Window Setup
+  ---Window setup
   love.window.setTitle(const.windowtitle)
   love.window.setMode(const.windowsize[1], const.windowsize[2], { borderless = false, resizable = true })
   love.graphics.setBackgroundColor(color(60, 60, 60, 60))

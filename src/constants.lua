@@ -1,9 +1,9 @@
-local utils = require 'src.utils'
+local utils = require 'src.utilitiess'
 local point = utils.point
 
 ---@enum consts
 local consts = {
-  windowtitle = 'Life Simulator v0.7.0',
+  windowtitle = 'Life Simulator v0.8.0',
   framerate = 0,
   dimensions = point:new(love.window.getDesktopDimensions(0)),
   windowsize = point:new(800, 500),

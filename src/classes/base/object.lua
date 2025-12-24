@@ -1,9 +1,9 @@
-local const = require 'src.const'
+local const = require 'src.constants'
+local vector = require 'src.classes.vector'
 
 ---@class object
 ---@field destroyed boolean
----@field x number
----@field y number
+---@field position vector
 ---@field size number
 ---@field truesize number
 ---@field image love.Image
@@ -12,7 +12,7 @@ object.__index = object
 
 ---Creates a new object to be displayed on screen.
 ---All the following arguments are *optional*.
----@param args {x: number?, y: number?, size: number?, image: love.Image?}? **table**  containing the following arguments:
+---@param args {position: vector?, size: number?, image: love.Image?}? **table**  containing the following arguments:
 --- `x` & `y`: **number**   The 2D position.
 --- `size`: **number**      The object's size.
 --- `image`: **love.image** The object's sprite.
@@ -21,8 +21,8 @@ function object:new(args)
   args = args or {}
 
   local new = setmetatable({}, self)
-  new.x = args.x or 0
-  new.y = args.y or 0
+  local pos = args.position and args.position:clone() or vector.ZERO
+  new.position = pos
   new.size = args.size or 1
   new.truesize = new.size * const.trueobjectsize
   new.image = const.images.object
@@ -35,19 +35,21 @@ function object:new(args)
 end
 
 ---Positions the object at the given *x* & *y* vectors.
----@param x number The *x* vector.
----@param y number The *y* vector.
----@overload fun(x: point)
-function object:position(x, y)
-  if type(x) == 'table' then
-    x, y = x.x or x[1], x.y or x[2]
-  end
-  self.x, self.y = x, y
+---@param vector vector The *x* vector.
+function object:setposition(vector)
+  self.position = vector:clone()
+end
+
+---Returns the object's position.
+---@return vector
+function object:getposition() -- this is redundant oml
+  return self.position:clone()
 end
 
 ---Draws the object on the screen.
 function object:draw()
-  love.graphics.draw(self.image, self.x, self.y, 0)
+  local x, y = self.position:get()
+  love.graphics.draw(self.image, x, y)
 end
 
 ---Disables draw function and flags the object as destroyed.

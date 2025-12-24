@@ -1,6 +1,6 @@
 local bot = require 'src.classes.bot'
-local const = require 'src.const'
-local object = require 'src.classes.object'
+local const = require 'src.constants'
+local object = require 'src.classes.base.object'
 
 ---@class food: object
 ---@field energy number
@@ -9,11 +9,10 @@ food.__index = food
 
 ---Creates a new food instance.
 ---All the following arguments are *optional*.
----@param args {x: number?, y: number?, size: number?, energy: number?, image: love.Image?}? **table**  containing the following arguments:
---- `x` & `y`: **number**                 The 2D position.
---- `size`: **number**                  The bot's size, speed, range.
+---@param args {position: vector?, size: number?, energy: number?, image: love.Image?}? **table**  containing the following arguments:
+--- `position`: **vector**             The food's position.
+--- `size`: **number**                  The food's size.
 --- `energy`: **number**                The starting energy.
---- `team`: **number**                  The bot's team.
 --- `image`: **love.image**             The food sprite.
 ---@return food
 function food:new(args)
@@ -28,6 +27,7 @@ function food:new(args)
   return new
 end
 
+---Feeds the food to a bot.
 ---@param bot bot
 function food:feed(bot)
   bot:consume(self.energy)

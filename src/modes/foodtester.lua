@@ -1,8 +1,9 @@
 local bot = require 'src.classes.bot'
-local const = require 'src.const'
+local const = require 'src.constants'
 local food = require 'src.classes.food'
-local utils = require 'src.utils'
+local utils = require 'src.utilitiess'
 local tracker = require 'src.classes.tracker'
+local vector = require 'src.classes.vector'
 local color = utils.color
 local bottracker = tracker.bottracker
 local foodtracker = tracker.foodtracker
@@ -24,14 +25,15 @@ local function update(delta)
   ---if bot consumes it.
   if #bt.objects == 0 then
     bt:add(bot:new {
-      x = math.random(const.windowsize[1]),
-      y = math.random(const.windowsize[2]),
+      position = vector:new(math.random(const.windowsize[1]), math.random(const.windowsize[2])),
       team = math.random(2),
       energy = 1,
       image = (math.random(2) == 1 and botimage1 or botimage2),
     })
   end
 
+  ---If no food, then make
+  ---a new food object.
   if #ft.objects == 0 then
     ft:add(food:new {
       x = math.random(const.windowsize[1]),

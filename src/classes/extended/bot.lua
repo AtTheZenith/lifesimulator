@@ -1,6 +1,6 @@
-local const = require 'src.const'
-local entity = require 'src.classes.entity'
-local utils = require 'src.utils'
+local const = require 'src.constants'
+local entity = require 'src.classes.base.entity'
+local utils = require 'src.utilitiess'
 local clamp = utils.clamp
 local magnitude = utils.getmagnitude
 
@@ -14,9 +14,11 @@ bot.__index = bot
 
 ---Creates a new bot instance.
 ---All the following arguments are *optional*.
----@param args {x: number?, y: number?, size: number?, speed: number?, range: number?, energy: number?, team: number?, image: love.Image?}? **table**  containing the following arguments:
---- `x` & `y`: **number**                 The 2D position.
---- `size` & `speed` & `range`: **number**  The bot's size, speed, range.
+---@param args {position: vector?, size: number?, speed: number?, range: number?, energy: number?, team: number?, image: love.Image?}? **table**  containing the following arguments:
+--- `position`: **vector**              The bot's position.
+--- `size`: **number**                  The bot's size.
+--- `speed`: **number**                 The bot's speed.
+--- `range`: **number**                 The bot's range.
 --- `energy`: **number**                The starting energy.
 --- `team`: **number**                  The bot's team.
 --- `image`: **love.image**             The bot sprite.
@@ -50,8 +52,7 @@ end
 ---Updates the bot after an elapsed amount of time.
 ---@param delta number The elapsed amount of time.
 function bot:update(delta)
-  self.x = self.x + self.movedirection.x * self.truespeed * delta
-  self.y = self.y + self.movedirection.y * self.truespeed * delta
+  self.position = self.position + self.movedirection * self.truespeed * delta
   self:consume(
     (
       self.size * self.size * 10
@@ -69,8 +70,7 @@ function bot:reproduce()
   if self.energy > const.reproductionmin then
     self:consume(-const.reproductioncost)
     return bot:new {
-      x = self.x,
-      y = self.y,
+      position = self.position,
       size = self.size + (math.random() / 5 - 0.1),
       speed = self.speed + (math.random() / 2.5 - 0.2),
       range = self.range + (math.random() / 5 - 0.1),
