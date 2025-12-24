@@ -1,6 +1,6 @@
 local const = require 'src.constants'
 local food = require 'src.classes.food'
-local tracker = require 'src.classes.trackers.normal' 
+local tracker = require 'src.classes.base.normal' 
 
 ---@class foodtracker: tracker
 local foodtracker = setmetatable({}, { __index = tracker })

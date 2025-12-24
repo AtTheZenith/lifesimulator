@@ -1,5 +1,5 @@
 local bot = require 'src.classes.extended.bot'
-local tracker = require 'src.classes.trackers.normal'
+local tracker = require 'src.classes.base.normal'
 
 ---@class bottracker: tracker
 local bottracker = setmetatable({}, { __index = tracker })
