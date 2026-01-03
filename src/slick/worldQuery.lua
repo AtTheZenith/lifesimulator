@@ -2,6 +2,8 @@ local worldQueryResponse = require 'slick.worldQueryResponse'
 local box = require 'slick.collision.box'
 local lineSegment = require 'slick.collision.lineSegment'
 local quadTreeQuery = require 'slick.collision.quadTreeQuery'
+local polygon = require 'slick.collision.polygon'
+local circle = require 'slick.collision.circle'
 local ray = require 'slick.geometry.ray'
 local shapeCollisionResolutionQuery = require 'slick.collision.shapeCollisionResolutionQuery'
 local point = require 'slick.geometry.point'
@@ -59,8 +61,10 @@ end
 local _cachedQueryTransform = transform.new()
 local _cachedQueryBoxShape = box.new(nil, 0, 0, 1, 1)
 local _cachedQueryLineSegmentShape = lineSegment.new(nil, 0, 0, 1, 1)
+local _cachedBounds = rectangle.new()
 local _cachedQueryVelocity = point.new()
 local _cachedQueryOffset = point.new()
+local _cachedQueryCircleShape = circle.new(nil, 0, 0, 1)
 
 --- @private
 --- @param shape slick.collision.shapeInterface
@@ -149,10 +153,23 @@ function worldQuery:_performPrimitiveSegmentQuery(s, filter)
   self:_performShapeQuery(_cachedQueryLineSegmentShape, filter)
 end
 
+--- @private
+--- @param x number
+--- @param y number
+--- @param radius number
+--- @param filter slick.worldShapeFilterQueryFunc
+function worldQuery:_performPrimitiveCircleQuery(x, y, radius, filter)
+  _cachedBounds:init(x - radius, y - radius, x + radius, y + radius)
+  self:_beginPrimitiveQuery(_cachedBounds)
+
+  _cachedQueryCircleShape:init(x, y, radius)
+  self:_performShapeQuery(_cachedQueryCircleShape, filter)
+end
+
 --- @param shape slick.geometry.point | slick.geometry.rectangle | slick.geometry.segment | slick.geometry.ray | slick.collision.commonShape
 --- @param filter slick.worldShapeFilterQueryFunc
 function worldQuery:performPrimitive(shape, filter)
-  if util.is(shape, commonShape) then
+  if util.is(shape, commonShape) or util.is(shape, circle) or util.is(shape, box) or util.is(shape, polygon) then
     --- @cast shape slick.collision.commonShape
     self:_beginPrimitiveQuery(shape.bounds)
   else
@@ -172,7 +189,7 @@ function worldQuery:performPrimitive(shape, filter)
   elseif util.is(shape, ray) then
     --- @cast shape slick.geometry.ray
     self:_performPrimitiveRayQuery(shape, filter)
-  elseif util.is(shape, commonShape) then
+  elseif util.is(shape, commonShape) or util.is(shape, circle) or util.is(shape, box) or util.is(shape, polygon) then
     --- @cast shape slick.collision.commonShape
     self:_performShapeQuery(shape, filter)
   end
@@ -259,8 +276,6 @@ function worldQuery:reset()
     pool:reset()
   end
 end
-
-local _cachedBounds = rectangle.new()
 
 --- @private
 --- @param entity slick.entity

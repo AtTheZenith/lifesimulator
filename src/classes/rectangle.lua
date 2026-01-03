@@ -1,3 +1,5 @@
+---Minimal general-purpose inheritable class for rectangles.
+
 local vector = require 'src.classes.vector'
 
 ---Rectangle class (centered anchor).

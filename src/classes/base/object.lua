@@ -1,61 +1,71 @@
-local const = require 'src.constants'
+local constants = require 'src.constants'
+local sprite = require 'src.classes.base.sprite'
+local slick = require 'src.slick'
 local vector = require 'src.classes.vector'
 
----@class object
----@field destroyed boolean
----@field position vector
----@field size number
----@field truesize number
----@field image love.Image
-local object = {}
+---@class object: sprite
+---@field world slick.world?
+---@field slickentity slick.entity?
+---@field radius number?
+---@field type string
+local object = setmetatable({}, sprite)
 object.__index = object
+object.type = 'object'
 
----Creates a new object to be displayed on screen.
+---Creates a new object instance.
 ---All the following arguments are *optional*.
----@param args {position: vector?, size: number?, image: love.Image?}? **table**  containing the following arguments:
---- `x` & `y`: **number**   The 2D position.
---- `size`: **number**      The object's size.
+---@param args {position: vector?, size: vector?, radius: number?, image: love.Image?, world: slick.world?, bodytype: ("circle"|"rectangle")?}? **table**  containing the following arguments:
+--- `position`: **vector**  The object's position.
+--- `size`: **vector**      The object's size (for rectangle).
+--- `radius`: **number**    The object's radius (for circle).
 --- `image`: **love.image** The object's sprite.
+--- `world`: **slick.world** The collision world.
+--- `bodytype`: **string**  The collision body type ('circle' or 'rectangle'). Defaults to 'circle'.
 ---@return object
 function object:new(args)
   args = args or {}
 
-  local new = setmetatable({}, self)
-  local pos = args.position and args.position:clone() or vector.ZERO
-  new.position = pos
-  new.size = args.size or 1
-  new.truesize = new.size * const.trueobjectsize
-  new.image = const.images.object
-  new.destroyed = false
-  if args.image then
-    new.image = args.image
+  if not args.world then error('"world" argument not passed to object:new.') end
+
+  ---Set default arguments
+  local bodytype = args.bodytype or "circle"
+
+  if bodytype == "rectangle" then
+    args.image = args.image or constants.images.object
+    args.size = args.size or vector:new(args.image:getWidth(), args.image:getHeight())
+  else
+    args.image = args.image or constants.images.circle
+    args.radius = args.radius or args.image:getWidth() / 2
+    args.size = args.size or vector:new(args.radius * 2, args.radius * 2)
+  end
+
+  ---Create object
+  local new = sprite.new(self, args)
+  ---@cast new object
+
+  ---Add to physics world
+  if args.world then
+    new.world = args.world
+    local shape
+
+    if args.bodytype == "rectangle" then
+      shape = slick.newRectangleShape(0, 0, args.size.x, args.size.y)
+    else
+      shape = slick.newCircleShape(args.radius, args.radius, args.radius)
+    end
+
+    new.slickentity = new.world:add(new, new.position.x, new.position.y, shape)
   end
 
   return new
 end
 
----Positions the object at the given *x* & *y* vectors.
----@param vector vector The *x* vector.
-function object:setposition(vector)
-  self.position = vector:clone()
-end
-
----Returns the object's position.
----@return vector
-function object:getposition() -- this is redundant oml
-  return self.position:clone()
-end
-
----Draws the object on the screen.
-function object:draw()
-  local x, y = self.position:get()
-  love.graphics.draw(self.image, x, y)
-end
-
----Disables draw function and flags the object as destroyed.
+---Disables draw function, flags the object as destroyed, and removes from physics.
 function object:destroy()
-  self.destroyed = true
-  self.draw = function() end
+  sprite.destroy(self)
+  if self.world and self.world:has(self) then
+    self.world:remove(self)
+  end
 end
 
 return object

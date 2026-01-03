@@ -1,24 +1,22 @@
-local const = require 'src.constants'
-local food = require 'src.classes.food'
-local utils = require 'src.utilitiess'
-
-local colliding = utils.colliding
-local handlecollision = utils.handlecollision
+---Minimal general-purpose inheritable class for tracking items.
 
 ---@class tracker
 ---@field type string
 ---@field objects any[]
+---@field world slick.world?
 local tracker = {}
 tracker.__index = tracker
 
 ---Creates a new tracker instance.
+---@param world slick.world?
 ---@return tracker
-function tracker:new()
+function tracker:new(world)
   local new = setmetatable({}, self)
 
   ---@type string
   new.type = 'normal'
   new.objects = {}
+  new.world = world
 
   return new
 end
@@ -42,8 +40,19 @@ function tracker:remove(object)
   end
 end
 
+---Removes an object at a specific index. O(1).
+---@param index vector
+function tracker:removeindex(index)
+  local objects = self.objects
+  local len = #objects
+  if index < 1 or index > len then return end
+
+  objects[index] = objects[len]
+  objects[len] = nil
+end
+
 ---Gets an object at the specific index.
----@param index number
+---@param index vector
 ---@return any
 function tracker:get(index)
   return self.objects[index]
@@ -52,8 +61,9 @@ end
 ---Wrapper for iterating over the object list.
 ---@param func fun(v: any)
 function tracker:iterate(func)
-  for _, v in next, self.objects do
-    func(v)
+  local objects = self.objects
+  for i = 1, #objects do
+    func(objects[i])
   end
 end
 
@@ -81,8 +91,9 @@ end
 
 ---Draws all objects on screen.
 function tracker:draw()
-  for _, v in next, self.objects do
-    v:draw()
+  local objects = self.objects
+  for i = 1, #objects do
+    objects[i]:draw()
   end
 end
 

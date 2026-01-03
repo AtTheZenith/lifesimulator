@@ -8,6 +8,8 @@ local collision = {
   quadTreeNode = require 'slick.collision.quadTreeNode',
   quadTreeQuery = require 'slick.collision.quadTreeQuery',
   polygon = require 'slick.collision.polygon',
+  box = require 'slick.collision.box',
+  circle = require 'slick.collision.circle',
   shapeCollisionResolutionQuery = require 'slick.collision.shapeCollisionResolutionQuery',
 }
 

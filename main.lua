@@ -1,29 +1,28 @@
 local const = require 'src.constants'
-local utils = require 'src.utilitiess'
+local modes = require 'src.modes.modes'
+local utils = require 'src.utilities'
 local color = utils.color
 
-local modes = {
-  foodchaser = require 'src.modes.foodtester',
-  collisiontester = require 'src.modes.collisiontester',
-}
-
-local currentmode = modes.collisiontester
+local currentmode = modes.diffusion
 
 function love.load()
   ---Window setup
   love.window.setTitle(const.windowtitle)
-  love.window.setMode(const.windowsize[1], const.windowsize[2], { borderless = false, resizable = true })
+  love.window.setMode(const.windowsize.x, const.windowsize.y, { borderless = false, resizable = true })
   love.graphics.setBackgroundColor(color(60, 60, 60, 60))
+
+  currentmode.load()
+  currentmode.update(0.67)
 end
 
-function love.update(delta)
-  ---Update dimensions
-  local w, h = love.window.getMode()
-  const.windowsize[1], const.windowsize[2] = w, h
-
-  currentmode.update(delta)
+function love.resize(w, h)
+  const.windowsize.x, const.windowsize.y = w, h
 end
 
-function love.draw()
-  currentmode.draw()
-end
+-- function love.update(dt)
+--   print(dt)
+--   currentmode.update(dt)
+-- end
+
+love.update = currentmode.update
+love.draw = currentmode.draw

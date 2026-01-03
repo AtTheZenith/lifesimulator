@@ -1,64 +1,78 @@
-local bot = require 'src.classes.bot'
+local bot = require 'src.classes.extended.bot'
+local bottracker = require 'src.classes.extended.bottracker'
 local const = require 'src.constants'
-local food = require 'src.classes.food'
-local utils = require 'src.utilitiess'
-local tracker = require 'src.classes.tracker'
+local food = require 'src.classes.extended.food'
+local foodtracker = require 'src.classes.extended.foodtracker'
+local utils = require 'src.utilities'
 local vector = require 'src.classes.vector'
-local color = utils.color
-local bottracker = tracker.bottracker
-local foodtracker = tracker.foodtracker
 
 local image = const.images.object
 local botimage1 = const.images.bluebot
 local botimage2 = const.images.orangebot
 local foodimage = const.images.food
 
----Trackers
----@type bottracker
-local bt = bottracker:new()
----@type foodtracker
-local ft = foodtracker:new()
+local slick = require 'src.slick'
+
+local world, bt, ft
+local function load()
+  ---Init world
+  world = slick.newWorld(const.windowsize.x, const.windowsize.y)
+
+  ---Trackers
+  bt = bottracker:new(world)
+  ft = foodtracker:new(world)
+end
 
 local function update(delta)
   ---Spawn food and make the bot
   ---chase it, spawn another one
   ---if bot consumes it.
-  if #bt.objects == 0 then
+
+  if #bt.objects < 30 then
     bt:add(bot:new {
-      position = vector:new(math.random(const.windowsize[1]), math.random(const.windowsize[2])),
+      position = vector:new(math.random(const.windowsize.x), math.random(const.windowsize.y)),
+      range = 120,
       team = math.random(2),
-      energy = 1,
+      energy = const.maxenergy,
       image = (math.random(2) == 1 and botimage1 or botimage2),
+      world = world,
     })
   end
 
-  ---If no food, then make
-  ---a new food object.
-  if #ft.objects == 0 then
+  if #ft.objects < 30 then
     ft:add(food:new {
-      x = math.random(const.windowsize[1]),
-      y = math.random(const.windowsize[2]),
-      size = math.random(),
-      energy = 1,
+      position = vector:new(math.random(const.windowsize.x), math.random(const.windowsize.y)),
       image = foodimage,
+      world = world,
     })
   end
 
   ---Chase food.
   bt:iterate(function(b)
-    local closestfood = nil
-    local closestdist = math.huge
-    for _, f in next, ft.objects do
-      local dist = utils.getmagnitude(f.x - b.x, f.y - b.y)
-      if dist < closestdist then
-        closestdist = dist
-        closestfood = f
+    ---@cast b bot
+    if not b.target or b.target.destroyed then
+      local closestfood = nil
+      local closestdist = math.huge
+
+      local results, len = world:queryCircle(b.position.x, b.position.y, b.range, function(item)
+        return item.type == 'food'
+      end)
+
+      for i = 1, len do
+        local f = results[i].item
+        local dist = (f.position - b.position):length()
+        if dist < closestdist then
+          closestdist = dist
+          closestfood = f
+        end
       end
+      b.target = closestfood
     end
-    if closestfood then
-      b:move(closestfood.x - b.x, closestfood.y - b.y)
+
+    if b.target then
+      b:move(b.target.position - b.position)
     else
-      b:move(0, 0)
+      b:move(vector.ZERO)
     end
   end)
 

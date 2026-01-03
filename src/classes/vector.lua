@@ -96,7 +96,7 @@ end
 ---The squared length of this vector.
 ---Faster than length() if you only need comparisons.
 ---@return number
-function vector:sqrLength()
+function vector:sqrlength()
   return self.x * self.x + self.y * self.y
 end
 

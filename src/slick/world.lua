@@ -1,5 +1,6 @@
 local cache = require 'slick.cache'
 local quadTree = require 'slick.collision.quadTree'
+local circle = require 'slick.collision.circle'
 local entity = require 'slick.entity'
 local point = require 'slick.geometry.point'
 local ray = require 'slick.geometry.ray'
@@ -57,7 +58,7 @@ local function _getQuadTreeOptions(t, width, height, options)
   t.maxLevels = options.quadTreeMaxLevels or t.maxLevels or defaultOptions.quadTreeMaxLevels
   t.maxData = options.quadTreeMaxData or t.maxData or defaultOptions.quadTreeMaxData
   t.expand = options.quadTreeExpand == nil and (t.expand == nil and defaultOptions.quadTreeExpand or t.expand)
-    or options.quadTreeExpand
+      or options.quadTreeExpand
 
   return t
 end
@@ -364,6 +365,23 @@ function world:queryRectangle(x, y, w, h, filter, query)
   return query.results, #query.results, query
 end
 
+local _cachedQueryCircle = circle.new(nil, 0, 0, 1)
+
+--- @param x number
+--- @param y number
+--- @param radius number
+--- @param filter slick.worldShapeFilterQueryFunc?
+--- @param query slick.worldQuery?
+--- @return slick.worldQueryResponse[], number, slick.worldQuery
+function world:queryCircle(x, y, radius, filter, query)
+  query = query or worldQuery.new(self)
+
+  _cachedQueryCircle:init(x, y, radius)
+  query:performPrimitive(_cachedQueryCircle, filter or defaultWorldShapeFilterQueryFunc)
+
+  return query.results, #query.results, query
+end
+
 local _cachedQuerySegment = segment.new()
 
 --- @param x1 number
@@ -501,7 +519,7 @@ function world:check(item, goalX, goalY, filter, query)
 
       local remappedResponseName, nextResult
       x, y, goalX, goalY, remappedResponseName, nextResult =
-        response(self, cachedQuery, result, x, y, goalX, goalY, filter, query)
+          response(self, cachedQuery, result, x, y, goalX, goalY, filter, query)
 
       --- @cast otherShape slick.collision.shapelike
       _cachedRemappedHandlers[otherShape] = remappedResponseName
@@ -513,8 +531,8 @@ function world:check(item, goalX, goalY, filter, query)
     local didMove = not (x == previousX and y == previousY)
 
     local isSameCollision = #cachedQuery.results >= 1
-      and cachedQuery.results[1].shape == shape
-      and cachedQuery.results[1].otherShape == otherShape
+        and cachedQuery.results[1].shape == shape
+        and cachedQuery.results[1].otherShape == otherShape
     for i = 2, #cachedQuery.results do
       if isSameCollision then
         break

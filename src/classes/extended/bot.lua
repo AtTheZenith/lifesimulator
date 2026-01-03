@@ -1,39 +1,47 @@
+---Bot class for simulations.
+
 local const = require 'src.constants'
 local entity = require 'src.classes.base.entity'
-local utils = require 'src.utilitiess'
+local utils = require 'src.utilities'
+local vector = require 'src.classes.vector'
 local clamp = utils.clamp
-local magnitude = utils.getmagnitude
 
 ---@class bot: entity
 ---@field range number
 ---@field energy number
 ---@field team number
----@field truerange number
+---@field type "bot"
+---@field target bot | food | nil
 local bot = setmetatable({}, entity)
 bot.__index = bot
+bot.type = 'bot'
 
 ---Creates a new bot instance.
 ---All the following arguments are *optional*.
----@param args {position: vector?, size: number?, speed: number?, range: number?, energy: number?, team: number?, image: love.Image?}? **table**  containing the following arguments:
+---@param args {position: vector?, size: vector?, speed: number?, range: number?, energy: number?, team: number?, image: love.Image?, world: slick.world?, bodytype: string?, radius: nil}? **table**  containing the following arguments:
 --- `position`: **vector**              The bot's position.
---- `size`: **number**                  The bot's size.
+--- `size`: **vector**                  The bot's size.
 --- `speed`: **number**                 The bot's speed.
 --- `range`: **number**                 The bot's range.
 --- `energy`: **number**                The starting energy.
 --- `team`: **number**                  The bot's team.
 --- `image`: **love.image**             The bot sprite.
+--- `world`: **slick.world**            The collision world.
 ---@return bot
 function bot:new(args)
   args = args or {}
+  args.bodytype = 'rectangle'
+  local size = args.size or vector:new(40, 40)
+  size.x = clamp(size.x, 40 * const.minbotsize, 40 * const.maxbotsize)
+  size.y = clamp(size.y, 40 * const.minbotsize, 40 * const.maxbotsize)
+  args.size = size
   local new = entity.new(self, args)
   ---@cast new bot
 
-  new.size = clamp(args.size or 1, const.minbotsize, const.maxbotsize)
-  new.truesize = new.size * const.trueobjectsize
-  new.range = clamp(args.range or 1, const.minbotrange, const.maxbotrange)
-  new.truerange = new.range * const.truebotrange
-  new.energy = (args.energy or 1) * const.maxenergy
+  new.range = clamp(args.range or 90, 90 * const.minbotrange, 90 * const.maxbotrange)
+  new.energy = (args.energy or 0.5) * const.maxenergy
   new.team = args.team or 0
+  new.target = nil
 
   return new
 end
@@ -49,18 +57,40 @@ function bot:consume(energy, reset)
   end
 end
 
+---Collision filter for bots.
+---@param other any
+---@return string
+function bot:filter(other)
+  if other.type == 'food' then
+    return 'cross'
+  end
+  return 'slide'
+end
+
 ---Updates the bot after an elapsed amount of time.
 ---@param delta number The elapsed amount of time.
 function bot:update(delta)
-  self.position = self.position + self.movedirection * self.truespeed * delta
+  entity.update(self, delta)
+
+  -- Process collisions (e.g. eating food)
+  local collisions = self.lastcollisions
+  if collisions then
+    for i = 1, self.lastcollisioncount do
+      local col = collisions[i]
+      if col.other.type == 'food' and not col.other.destroyed then
+        col.other:feed(self)
+      end
+    end
+  end
+
   self:consume(
     (
-      self.size * self.size * 10
-      + magnitude(self.movedirection) * self.speed * self.speed * 2
-      + self.range * self.range * math.sqrt(self.range) * 3
+      self.size.x
+      + self.movedirection:length() * self.speed
+      + math.sqrt(self.range)
     )
-      * delta
-      * -2
+    * delta
+    * -1
   )
 end
 
@@ -71,11 +101,12 @@ function bot:reproduce()
     self:consume(-const.reproductioncost)
     return bot:new {
       position = self.position,
-      size = self.size + (math.random() / 5 - 0.1),
-      speed = self.speed + (math.random() / 2.5 - 0.2),
-      range = self.range + (math.random() / 5 - 0.1),
+      size = self.size + (math.random() * 4 - 2),
+      speed = self.speed + (math.random() * 6 - 3),
+      range = self.range + (math.random() * 6 - 3),
       energy = self.energy / 2 / const.maxenergy,
       team = math.random(3),
+      world = self.world,
     }
   end
 end
