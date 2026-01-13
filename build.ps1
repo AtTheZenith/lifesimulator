@@ -7,7 +7,7 @@ if ($PSVersionTable.PSVersion.Major -ne 7) {
 # -------------------
 # Configuration
 # -------------------
-$appName = "game"
+$appName = "lifesimulator"
 $requireFiles = @("main.lua")
 $requireFolders = @("src", "assets")
 
