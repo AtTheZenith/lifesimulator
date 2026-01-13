@@ -76,6 +76,7 @@ local function load()
   tag = require 'slick.tag'
   util = require 'slick.util'
   world = require 'slick.world'
+  ---@diagnostic disable-next-line: different-requires
   worldQuery = require 'slick.worldQuery'
   worldQueryResponse = require 'slick.worldQueryResponse'
 

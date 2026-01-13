@@ -9,6 +9,7 @@ local segment = require 'slick.geometry.segment'
 local transform = require 'slick.geometry.transform'
 local defaultOptions = require 'slick.options'
 local responses = require 'slick.responses'
+---@diagnostic disable-next-line: different-requires
 local worldQuery = require 'slick.worldQuery'
 local util = require 'slick.util'
 local slickmath = require 'slick.util.slickmath'

@@ -4,6 +4,7 @@ local ray = require 'slick.geometry.ray'
 local rectangle = require 'slick.geometry.rectangle'
 local segment = require 'slick.geometry.segment'
 local util = require 'slick.util'
+---@diagnostic disable-next-line: different-requires
 local worldQuery = require 'slick.worldQuery'
 
 --- @param node slick.collision.quadTreeNode

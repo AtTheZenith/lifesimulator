@@ -3,6 +3,7 @@
 local const = require 'src.constants'
 local object = require 'src.classes.base.object'
 local vector = require 'src.classes.vector'
+---@diagnostic disable-next-line: different-requires
 local worldQuery = require 'src.slick.worldQuery'
 
 ---@class entity: object
